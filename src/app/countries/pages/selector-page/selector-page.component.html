@@ -5,13 +5,34 @@
   <!-- Region -->
   <div class="row">
     <div class="col">
-      <label class="form-label">Continent:</label>
-      <select class="form-control">
+      <label class="form-label"><b>Continent:</b></label>
+      <select class="form-control" formControlName="region">
         <option value="">-- Select continent --</option>
+        <option *ngFor="let region of regions" [value]="region">
+          {{ region }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Country -->
+  <div class="row" *ngIf="myForm.controls.region.value">
+    <div class="col">
+      <label class="form-label"><b>Country:</b></label>
+      <select class="form-control" formControlName="country">
+        <option value="">-- Select country--</option>
+        <option
+          *ngFor="let country of countriesByRegion"
+          [value]="country.cca3"
+        >
+          {{ country.name }}
+        </option>
       </select>
     </div>
   </div>
 </form>
+
+<br />
 
 <h3>Form</h3>
 <code>
