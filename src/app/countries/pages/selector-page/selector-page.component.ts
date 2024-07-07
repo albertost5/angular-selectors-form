@@ -13,6 +13,7 @@ import { SmallCountry } from '../../interfaces/smallCountry.interface';
 })
 export class SelectorPageComponent implements OnInit {
   countriesByRegion: SmallCountry[] = [];
+  bordersByCountry: SmallCountry[] = [];
   public myForm: FormGroup<CountryFormInterface> = this.fb.group({
     region: ['', Validators.required],
     country: ['', Validators.required],
@@ -30,18 +31,37 @@ export class SelectorPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.onRegionChanged();
+    this.onCountryChanged();
   }
 
-  onRegionChanged() {
+  onRegionChanged(): void {
     this.myForm.controls.region.valueChanges
       .pipe(
-        tap(() => this.myForm.controls.country.setValue('')), // reset
+        skipWhile((val) => val === '' || val === undefined),
+        tap(() => this.myForm.controls.country.setValue('')),
         switchMap((region) =>
           this.countriesService.getCountriesByRegion(region!),
         ),
       )
       .subscribe((countriesByRegion) => {
-        this.countriesByRegion = countriesByRegion;
+        this.countriesByRegion = countriesByRegion.sort((a, b) =>
+          a.name.localeCompare(b.name),
+        );
       });
+  }
+
+  onCountryChanged(): void {
+    this.myForm.controls.country.valueChanges
+      .pipe(
+        skipWhile((val) => val === '' || val === undefined),
+        tap(() => this.myForm.controls.borders.reset('')),
+        switchMap((countryAlphaCode) =>
+          this.countriesService.getBordersByAlphaCode(countryAlphaCode!),
+        ),
+        switchMap((country) =>
+          this.countriesService.getCountryBordersByAlphaCodes(country.borders),
+        ),
+      )
+      .subscribe((countries) => (this.bordersByCountry = countries));
   }
 }

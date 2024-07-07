@@ -30,6 +30,19 @@
       </select>
     </div>
   </div>
+
+  <!-- Borders -->
+  <div class="row" *ngIf="myForm.controls.country.value">
+    <div class="col">
+      <label class="form-label"><b>Borders:</b></label>
+      <select class="form-control" formControlName="borders">
+        <option value="">-- Select border --</option>
+        <option *ngFor="let country of bordersByCountry" [value]="country.cca3">
+          {{ country.name }}
+        </option>
+      </select>
+    </div>
+  </div>
 </form>
 
 <br />
